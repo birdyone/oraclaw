@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Oraclaw – Contratos inteligentes y abogados a un clic</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Oraclaw es una plataforma donde puedes crear contratos con plantillas guiadas y conectar con abogados que pueden revisarlos o adaptarlos.">
+  <style>
+    :root {
+      --bg: #050814;
+      --bg-alt: #020617;
+      --card: #0f172a;
+      --border: #1f2937;
+      --accent: #d4af37;
+      --accent-soft: rgba(212, 175, 55, 0.12);
+      --text: #f9fafb;
+      --muted: #9ca3af;
+      --radius: 20px;
+      --shadow: 0 24px 80px rgba(0,0,0,0.75);
+      --transition: 0.2s ease-out;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+      background: radial-gradient(circle at top, #111827 0, #050814 40%, #000 100%);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* NAV */
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(16px);
+      background: linear-gradient(to bottom, rgba(5, 8, 20, 0.94), rgba(5, 8, 20, 0.75), transparent);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+    }
+
+    .nav {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 14px;
+      background: radial-gradient(circle at 30% 0, var(--accent) 0, #7c3aed 45%, #020617 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.75);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-mark::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: 12px;
+      border: 1px solid rgba(249,250,251,0.28);
+    }
+
+    .logo-mark span {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-text strong {
+      font-size: 18px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .logo-text small {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--muted);
+      letter-spacing: 0.16em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 10px;
+      font-size: 13px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      color: var(--muted);
+      cursor: pointer;
+      background: transparent;
+      font: inherit;
+      transition: var(--transition);
+    }
+
+    .nav-link:hover {
+      border-color: rgba(148,163,184,0.5);
+      color: var(--text);
+      background: rgba(15,23,42,0.9);
+    }
+
+    .btn-nav {
+      padding: 7px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(212,175,55,0.7);
+      background: radial-gradient(circle at 20% 0, rgba(212,175,55,0.8), #020617);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 16px 50px rgba(0,0,0,0.8);
+      transition: var(--transition);
+    }
+
+    .btn-nav:hover {
+      transform: translateY(-1px);
+      border-color: var(--accent);
+    }
+
+    main { flex: 1; }
+
+    .section {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 32px 20px 52px;
+    }
+
+    .section-heading {
+      margin-bottom: 22px;
+      max-width: 640px;
+    }
+
+    .section-kicker {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .section-title {
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    .section-subtitle {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    /* HERO */
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+      gap: 28px;
+      padding-top: 32px;
+      padding-bottom: 52px;
+      align-items: center;
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px 4px 4px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: radial-gradient(circle at left, rgba(212,175,55,0.6), rgba(15,23,42,0.96));
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+      margin-bottom: 12px;
+    }
+
+    .badge-pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.92);
+      border: 1px solid rgba(17,24,39,1);
+    }
+
+    .hero h1 {
+      font-size: clamp(30px, 5vw, 40px);
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(to right, #e5e7eb, var(--accent));
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      font-size: 15px;
+      color: var(--muted);
+      max-width: 520px;
+      margin-bottom: 18px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .btn-primary {
+      border-radius: 999px;
+      border: 1px solid rgba(212,175,55,0.8);
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      background: radial-gradient(circle at 20% 0, rgba(212,175,55,0.9), #020617);
+      box-shadow: var(--shadow);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px) scale(1.01);
+      border-color: var(--accent);
+    }
+
+    .btn-ghost {
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      padding: 10px 18px;
+      font-size: 14px;
+      cursor: pointer;
+      background: rgba(15,23,42,0.9);
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(212,175,55,0.7);
+      color: var(--text);
+    }
+
+    .hero-metrics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .hero-metrics span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(55,65,81,0.9);
+    }
+
+    .hero-metrics strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .hero-card {
+      border-radius: 22px;
+      background: radial-gradient(circle at top, rgba(212,175,55,0.2), rgba(15,23,42,0.98));
+      border: 1px solid rgba(148,163,184,0.4);
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card-inner {
+      border-radius: 18px;
+      border: 1px solid rgba(55,65,81,0.9);
+      background: rgba(2,6,23,0.95);
+      padding: 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .hero-card-inner h3 {
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .hero-card-inner ul {
+      list-style: none;
+      padding-left: 0;
+      margin-bottom: 8px;
+    }
+
+    .hero-card-inner li {
+      margin-bottom: 4px;
+      display: flex;
+      gap: 6px;
+      align-items: flex-start;
+    }
+
+    .hero-card-inner li::before {
+      content: "›";
+      color: var(--accent);
+      font-size: 12px;
+      margin-top: 1px;
+    }
+
+    .hero-tagline {
+      font-size: 11px;
+      margin-top: 6px;
+      color: #6b7280;
+    }
+
+    /* CARDS GENERALES */
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 16px 16px 18px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+
+    .card-title {
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+
+    .card-subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    /* PLANTILLAS */
+
+    .templates-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    @media (max-width: 980px) {
+      .templates-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 700px) {
+      .templates-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .template-card {
+      background: rgba(15,23,42,0.96);
+      border-radius: 16px;
+      border: 1px solid rgba(55,65,81,0.9);
+      padding: 12px 12px 14px;
+      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .template-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      align-items: baseline;
+    }
+
+    .template-name {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .template-tag {
+      font-size: 11px;
+      color: var(--muted);
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(55,65,81,0.9);
+    }
+
+    .template-meta {
+      font-size: 11px;
+      color: #9ca3af;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .template-actions {
+      margin-top: 6px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-sm {
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.7);
+      background: rgba(15,23,42,0.96);
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .btn-sm.primary {
+      border-color: rgba(212,175,55,0.7);
+      color: var(--text);
+      background: radial-gradient(circle at 25% 0, rgba(212,175,55,0.9), #020617);
+    }
+
+    .btn-sm:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    /* EDITOR DE PLANTILLA */
+
+    .editor-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.15fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 980px) {
+      .editor-layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    form.editor-form {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    form.editor-form .full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+      color: #e5e7eb;
+    }
+
+    input, textarea, select {
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      padding: 8px 11px;
+      font: inherit;
+      color: var(--text);
+      outline: none;
+      transition: var(--transition);
+    }
+
+    textarea {
+      border-radius: 10px;
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #6b7280;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: rgba(212,175,55,0.7);
+      box-shadow: 0 0 0 1px rgba(212,175,55,0.35);
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .checkbox-row input {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+    }
+
+    .editor-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .preview-title {
+      font-size: 15px;
+    }
+
+    .preview-tag {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .preview-body {
+      background: var(--bg-alt);
+      border-radius: 12px;
+      border: 1px solid #111827;
+      padding: 16px;
+      height: 420px;
+      overflow-y: auto;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #e5e7eb;
+      white-space: pre-wrap;
+    }
+
+    .preview-body h2 {
+      font-size: 15px;
+      text-align: center;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .preview-footnote {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* DIRECTORIO ABOGADOS */
+
+    .lawyers-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    @media (max-width: 980px) {
+      .lawyers-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 700px) {
+      .lawyers-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .lawyer-card {
+      background: rgba(15,23,42,0.96);
+      border-radius: 16px;
+      border: 1px solid rgba(55,65,81,0.9);
+      padding: 12px 12px 14px;
+      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .lawyer-name {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .lawyer-meta {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .lawyer-speciality {
+      font-size: 12px;
+    }
+
+    .lawyer-actions {
+      margin-top: 6px;
+      display: flex;
+      gap: 8px;
+    }
+
+    /* PARA ABOGADOS */
+
+    .for-lawyers-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .for-lawyers-layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .list {
+      list-style: none;
+      padding-left: 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .list li {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .list li::before {
+      content: "●";
+      font-size: 9px;
+      margin-top: 4px;
+      color: var(--accent);
+    }
+
+    footer {
+      border-top: 1px solid rgba(31,41,55,1);
+      padding: 14px 20px 20px;
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    .footer-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="nav">
+        <div class="logo">
+          <div class="logo-mark"><span>Ō</span></div>
+          <div class="logo-text">
+            <strong>ORACLAW</strong>
+            <small>CONTRATOS &amp; ABOGADOS</small>
+          </div>
+        </div>
+        <div class="nav-links">
+          <button class="nav-link" onclick="scrollToId('home')">Inicio</button>
+          <button class="nav-link" onclick="scrollToId('templates')">Plantillas</button>
+          <button class="nav-link" onclick="scrollToId('editor')">Editor</button>
+          <button class="nav-link" onclick="scrollToId('lawyers')">Abogados</button>
+          <button class="nav-link" onclick="scrollToId('for-lawyers')">Para abogados</button>
+          <button class="btn-nav" onclick="scrollToId('editor')">Crear contrato</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="section hero" id="home">
+        <div>
+          <div class="badge">
+            <span class="badge-pill">Beta</span>
+            Contratos guiados + abogados a un clic
+          </div>
+          <h1>
+            Contratos listos para usar.<br />
+            <span>Abogados cuando realmente los necesitas.</span>
+          </h1>
+          <p>
+            Oraclaw te permite crear contratos claros con plantillas guiadas dentro del sitio.
+            Si tu caso es más complejo, te conectamos con abogados que pueden revisarlos o
+            adaptarlos a tu situación.
+          </p>
+          <div class="hero-actions">
+            <button class="btn-primary" onclick="scrollToId('editor')">
+              Empezar un contrato
+              <span>→</span>
+            </button>
+            <button class="btn-ghost" onclick="scrollToId('templates')">
+              Ver biblioteca de plantillas
+            </button>
+          </div>
+          <div class="hero-metrics">
+            <span><strong>10+ plantillas</strong> listas para personalizar</span>
+            <span><strong>En minutos</strong> tienes tu contrato descargable</span>
+          </div>
+        </div>
+
+        <aside class="hero-card">
+          <div class="hero-card-inner">
+            <h3>¿Qué puedes hacer en Oraclaw?</h3>
+            <ul>
+              <li>Crear contratos básicos sin tener que empezar desde cero.</li>
+              <li>Entender qué cláusulas son importantes en lenguaje simple.</li>
+              <li>Conectar con abogados para revisión o redacción a medida.</li>
+            </ul>
+            <p class="hero-tagline">
+              Empiezas con una plantilla. Si se complica, escalas a un abogado en un clic.
+            </p>
+          </div>
+        </aside>
+      </section>
+
+      <!-- PLANTILLAS -->
+      <section class="section" id="templates">
+        <div class="section-heading">
+          <div class="section-kicker">Plantillas</div>
+          <div class="section-title">Biblioteca de contratos listos para rellenar.</div>
+          <div class="section-subtitle">
+            Empieza con una plantilla, respóndele a un pequeño cuestionario y genera tu contrato.
+            Aquí tienes algunos ejemplos. El editor completo está más abajo.
+          </div>
+        </div>
+
+        <div class="templates-grid">
+          <article class="template-card">
+            <div class="template-header">
+              <div class="template-name">Contrato de prestación de servicios</div>
+              <div class="template-tag">Freelancers / Pymes</div>
+            </div>
+            <p>
+              Ideal para diseñadores, desarrolladores, consultores y cualquier persona que
+              preste servicios profesionales.
+            </p>
+            <div class="template-meta">
+              <span>⏱ 5–10 min</span>
+              <span>⚖ Nivel: básico–intermedio</span>
+            </div>
+            <div class="template-actions">
+              <button class="btn-sm primary" onclick="scrollToId('editor')">
+                Usar esta plantilla
+              </button>
+              <button class="btn-sm" onclick="alert('En el MVP esta info es estática. Más adelante: página propia por plantilla.')">
+                Ver detalles
+              </button>
+            </div>
+          </article>
+
+          <article class="template-card">
+            <div class="template-header">
+              <div class="template-name">Contrato de arriendo</div>
+              <div class="template-tag">Vivienda</div>
+            </div>
+            <p>
+              Contrato base para arriendo de vivienda. Incluye renta, garantías, inventario
+              y terminación.
+            </p>
+            <div class="template-meta">
+              <span>⏱ 7–12 min</span>
+              <span>⚖ Nivel: intermedio</span>
+            </div>
+            <div class="template-actions">
+              <button class="btn-sm primary" onclick="alert('En siguiente versión: editor específico para arriendo.')">
+                Usar esta plantilla
+              </button>
+              <button class="btn-sm">Ver detalles</button>
+            </div>
+          </article>
+
+          <article class="template-card">
+            <div class="template-header">
+              <div class="template-name">Acuerdo de confidencialidad (NDA)</div>
+              <div class="template-tag">Negocios</div>
+            </div>
+            <p>
+              Para compartir información sensible con proveedores, socios, potenciales
+              inversores o colaboradores.
+            </p>
+            <div class="template-meta">
+              <span>⏱ 3–5 min</span>
+              <span>⚖ Nivel: básico</span>
+            </div>
+            <div class="template-actions">
+              <button class="btn-sm primary" onclick="alert('Luego puedes duplicar la lógica del editor para un NDA.')">
+                Usar esta plantilla
+              </button>
+              <button class="btn-sm">Ver detalles</button>
+            </div>
+          </article>
+
+          <article class="template-card">
+            <div class="template-header">
+              <div class="template-name">Contrato de colaboración</div>
+              <div class="template-tag">Startups</div>
+            </div>
+            <p>
+              Para proyectos en conjunto, campañas, colaboraciones entre marcas o
+              creadores de contenido.
+            </p>
+            <div class="template-meta">
+              <span>⏱ 5–8 min</span>
+              <span>⚖ Nivel: intermedio</span>
+            </div>
+            <div class="template-actions">
+              <button class="btn-sm primary" onclick="alert('Futuro editor. Ahora es solo ejemplo visual.')">
+                Usar esta plantilla
+              </button>
+              <button class="btn-sm">Ver detalles</button>
+            </div>
+          </article>
+
+          <article class="template-card">
+            <div class="template-header">
+              <div class="template-name">Términos &amp; Condiciones básicos</div>
+              <div class="template-tag">E-commerce</div>
+            </div>
+            <p>
+              Estructura base para una tienda online: envíos, devoluciones, responsabilidad
+              limitada, etc.
+            </p>
+            <div class="template-meta">
+              <span>⏱ 10–15 min</span>
+              <span>⚖ Nivel: intermedio</span>
+            </div>
+            <div class="template-actions">
+              <button class="btn-sm primary" onclick="alert('Se puede conectar a una vista tipo política web.')">
+                Usar esta plantilla
+              </button>
+              <button class="btn-sm">Ver detalles</button>
+            </div>
+          </article>
+
+          <article class="template-card">
+            <div class="template-header">
+              <div class="template-name">Carta de terminación de contrato</div>
+              <div class="template-tag">General</div>
+            </div>
+            <p>
+              Modelo para comunicar el término de un contrato de manera clara y
+              documentada.
+            </p>
+            <div class="template-meta">
+              <span>⏱ 3–5 min</span>
+              <span>⚖ Nivel: básico</span>
+            </div>
+            <div class="template-actions">
+              <button class="btn-sm primary" onclick="alert('Editor muy sencillo para este tipo de documento.')">
+                Usar esta plantilla
+              </button>
+              <button class="btn-sm">Ver detalles</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- EDITOR DE CONTRATO -->
+      <section class="section" id="editor">
+        <div class="section-heading">
+          <div class="section-kicker">Editor en vivo</div>
+          <div class="section-title">Crea tu contrato de prestación de servicios.</div>
+          <div class="section-subtitle">
+            Rellena los datos a la izquierda y mira cómo se genera el contrato a la derecha
+            en tiempo real. Luego podrás descargarlo y, si quieres, pedir revisión de un abogado.
+          </div>
+        </div>
+
+        <div class="editor-layout">
+          <!-- FORMULARIO -->
+          <section class="card">
+            <div class="card-title">Datos del contrato</div>
+            <div class="card-subtitle">
+              Este modelo es genérico. Para operaciones complejas o importes elevados, te recomendamos
+              que un abogado revise el documento antes de firmarlo.
+            </div>
+
+            <form id="contractForm" class="editor-form">
+              <label>
+                Nombre del prestador de servicios
+                <input type="text" id="providerName" placeholder="Ej: Juan Pérez">
+              </label>
+
+              <label>
+                Nombre del cliente
+                <input type="text" id="clientName" placeholder="Ej: Empresa XYZ Ltd.">
+              </label>
+
+              <label>
+                Ciudad y país
+                <input type="text" id="cityCountry" placeholder="Ej: Londres, Reino Unido">
+              </label>
+
+              <label>
+                Fecha de inicio
+                <input type="date" id="startDate">
+              </label>
+
+              <label>
+                Monto total (moneda)
+                <input type="text" id="amount" placeholder="Ej: £2,000">
+              </label>
+
+              <label>
+                Descripción del servicio
+                <textarea id="serviceDescription" class="full" placeholder="Ej: diseño, desarrollo e implementación de sitio web corporativo."></textarea>
+              </label>
+
+              <label class="full">
+                Plazo de entrega / duración
+                <input type="text" id="duration" placeholder="Ej: 3 meses desde la fecha de inicio">
+              </label>
+
+              <div class="full">
+                <div class="checkbox-row">
+                  <input type="checkbox" id="includeConfidentiality" checked>
+                  <span>Incluir cláusula de confidencialidad</span>
+                </div>
+                <div class="checkbox-row">
+                  <input type="checkbox" id="includeNonCompete">
+                  <span>Incluir cláusula de no competencia</span>
+                </div>
+              </div>
+            </form>
+
+            <div class="editor-buttons">
+              <button class="btn-sm primary" id="updatePreviewBtn">Actualizar vista previa</button>
+              <button class="btn-sm" id="resetBtn">Resetear datos</button>
+            </div>
+          </section>
+
+          <!-- PREVIEW -->
+          <section class="card">
+            <div class="preview-header">
+              <div>
+                <div class="preview-title">Vista previa del contrato</div>
+                <div class="preview-tag">Se actualiza con tus respuestas</div>
+              </div>
+              <div class="editor-buttons">
+                <button class="btn-sm primary" id="downloadBtn">
+                  Descargar contrato
+                </button>
+              </div>
+            </div>
+
+            <div id="preview" class="preview-body"></div>
+
+            <div class="preview-footnote">
+              Este modelo puede no adaptarse a todas las legislaciones. Oraclaw no reemplaza el
+              asesoramiento de un profesional del derecho.
+            </div>
+          </section>
+        </div>
+
+        <p class="preview-footnote" style="margin-top: 10px;">
+          Próximo paso natural aquí: botón “Que lo revise un abogado” → enviarías la información
+          como lead a tu marketplace y podrías cobrar al abogado por revisar este contrato.
+        </p>
+      </section>
+
+      <!-- DIRECTORIO DE ABOGADOS -->
+      <section class="section" id="lawyers">
+        <div class="section-heading">
+          <div class="section-kicker">Abogados</div>
+          <div class="section-title">Encuentra abogados que conocen estas plantillas.</div>
+          <div class="section-subtitle">
+            Conecta con abogados que ya están familiarizados con los modelos de Oraclaw
+            y pueden revisar o adaptar tu contrato según tu país y tu caso concreto.
+          </div>
+        </div>
+
+        <div class="lawyers-grid">
+          <article class="lawyer-card">
+            <div class="lawyer-name">María Gómez</div>
+            <div class="lawyer-meta">Derecho comercial · Londres, Reino Unido · ES / EN</div>
+            <div class="lawyer-speciality">
+              Especialidad en contratos de prestación de servicios, NDA y startups.
+            </div>
+            <div class="lawyer-actions">
+              <button class="btn-sm primary" onclick="alert('En el MVP este botón podría enviar un formulario a tu email.')">
+                Contactar
+              </button>
+              <button class="btn-sm">Ver perfil</button>
+            </div>
+          </article>
+
+          <article class="lawyer-card">
+            <div class="lawyer-name">Carlos Fernández</div>
+            <div class="lawyer-meta">Derecho inmobiliario · Madrid, España · ES</div>
+            <div class="lawyer-speciality">
+              Contratos de arriendo, compraventa y administración de propiedades.
+            </div>
+            <div class="lawyer-actions">
+              <button class="btn-sm primary" onclick="alert('Lead de ejemplo: se enviaría a este abogado y a ti.')">
+                Contactar
+              </button>
+              <button class="btn-sm">Ver perfil</button>
+            </div>
+          </article>
+
+          <article class="lawyer-card">
+            <div class="lawyer-name">Laura Silva</div>
+            <div class="lawyer-meta">Tecnología &amp; datos · Lisboa, Portugal · PT / EN / ES</div>
+            <div class="lawyer-speciality">
+              Términos &amp; Condiciones, políticas de privacidad y SaaS B2B.
+            </div>
+            <div class="lawyer-actions">
+              <button class="btn-sm primary">
+                Contactar
+              </button>
+              <button class="btn-sm">Ver perfil</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- PARA ABOGADOS -->
+      <section class="section" id="for-lawyers">
+        <div class="section-heading">
+          <div class="section-kicker">Para abogados</div>
+          <div class="section-title">Recibe clientes que ya saben qué contrato necesitan.</div>
+          <div class="section-subtitle">
+            Nos encargamos de la parte repetitiva (plantillas y datos básicos). Tú entras
+            cuando hay necesidades reales de revisión, adaptación o negociaciones complejas.
+          </div>
+        </div>
+
+        <div class="for-lawyers-layout">
+          <section class="card">
+            <div class="card-title">Cómo funciona para ti</div>
+            <ul class="list">
+              <li>Usuarios crean borradores de contratos dentro de Oraclaw.</li>
+              <li>Cuando su caso es más delicado, les sugerimos hablar con un abogado.</li>
+              <li>Te enviamos leads que ya tienen un contexto y un documento de partida.</li>
+              <li>Puedes ofrecer revisión rápida, adaptación completa o call de consultoría.</li>
+            </ul>
+            <p class="card-subtitle" style="margin-top: 10px;">
+              Empezamos con un grupo reducido de despachos y abogados independientes para
+              construir flujos que funcionen en la práctica.
+            </p>
+          </section>
+
+          <section class="card">
+            <div class="card-title">Quiero aparecer en Oraclaw</div>
+            <div class="card-subtitle">
+              Deja tus datos y te contactaremos con más detalles sobre planes, visibilidad
+              y condiciones de colaboración.
+            </div>
+
+            <form class="editor-form" onsubmit="handleLawyerForm(event)">
+              <label class="full">
+                Nombre completo
+                <input type="text" placeholder="Ej: Ana López" required>
+              </label>
+              <label>
+                Email profesional
+                <input type="email" placeholder="name@firm.com" required>
+              </label>
+              <label>
+                País / ciudad
+                <input type="text" placeholder="Ej: Santiago, Chile" required>
+              </label>
+              <label class="full">
+                Áreas de práctica principales
+                <input type="text" placeholder="Ej: contratos comerciales, inmobiliario, startups">
+              </label>
+              <label class="full">
+                Mensaje
+                <textarea placeholder="Cuéntanos brevemente qué tipo de clientes buscas."></textarea>
+              </label>
+              <div class="editor-buttons">
+                <button class="btn-sm primary" type="submit">Enviar solicitud</button>
+              </div>
+            </form>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-inner">
+        <span>© <span id="year"></span> Oraclaw. Esto no es asesoría legal.</span>
+        <span>Hecho con ⚖️ &amp; código.</span>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    function scrollToId(id) {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    function buildContractText(values) {
+      const {
+        providerName,
+        clientName,
+        cityCountry,
+        startDate,
+        amount,
+        serviceDescription,
+        duration,
+        includeConfidentiality,
+        includeNonCompete
+      } = values;
+
+      const dateStr = startDate ? new Date(startDate).toLocaleDateString("es-ES") : "[FECHA]";
+
+      let text = "";
+      text += "CONTRATO DE PRESTACIÓN DE SERVICIOS\n\n";
+      text += `En ${cityCountry || "[CIUDAD, PAÍS]"}, a ${dateStr}, comparecen:\n\n`;
+      text += `Por una parte, ${providerName || "[NOMBRE DEL PRESTADOR]"}, en adelante, el “Prestador”; y por otra parte, ${clientName || "[NOMBRE DEL CLIENTE]"}, en adelante, el “Cliente”. Ambas partes, en conjunto, las “Partes”.\n\n`;
+      text += "1. OBJETO DEL CONTRATO\n";
+      text += `El Prestador se obliga a prestar a favor del Cliente los siguientes servicios: ${serviceDescription || "[DESCRIPCIÓN DEL SERVICIO]"}. El Cliente se obliga a pagar por dichos servicios la contraprestación señalada en la cláusula siguiente.\n\n`;
+      text += "2. HONORARIOS Y FORMA DE PAGO\n";
+      text += `El Cliente pagará al Prestador la suma total de ${amount || "[MONTO]"}, de acuerdo con las condiciones que las Partes acuerden (por ejemplo, porcentajes contra hitos, pago mensual, o pago único). Salvo pacto en contrario por escrito, los impuestos que correspondan serán de cargo del Cliente.\n\n`;
+      text += "3. PLAZOS Y DURACIÓN\n";
+      text += `Las Partes acuerdan que la duración estimada de los servicios será de ${duration || "[DURACIÓN]"}, contados desde la fecha de inicio indicada en el encabezado del presente contrato, salvo prórroga o modificación por escrito.\n\n`;
+
+      if (includeConfidentiality) {
+        text += "4. CONFIDENCIALIDAD\n";
+        text += "El Prestador se obliga a guardar estricta reserva respecto de toda la información confidencial a la que tenga acceso con ocasión de la ejecución de los servicios, incluyendo, sin limitarse a, información técnica, comercial, financiera o estratégica del Cliente. Esta obligación se mantendrá vigente incluso después de la terminación del presente contrato.\n\n";
+      }
+
+      if (includeNonCompete) {
+        text += includeConfidentiality ? "5. NO COMPETENCIA (OPCIONAL)\n" : "4. NO COMPETENCIA (OPCIONAL)\n";
+        text += "Durante la vigencia de este contrato y por el plazo que las Partes definan por escrito con posterioridad a su término, el Prestador se obliga a no prestar servicios de naturaleza idéntica o sustancialmente similar a competidores directos del Cliente, en la medida en que dicha limitación sea razonable y permita el ejercicio normal de la actividad profesional del Prestador.\n\n";
+      }
+
+      const baseNextClause = 4 + (includeConfidentiality ? 1 : 0) + (includeNonCompete ? 1 : 0);
+
+      text += baseNextClause + ". PROPIEDAD INTELECTUAL\n";
+      text += "Salvo acuerdo expreso en contrario, la propiedad intelectual de los entregables producidos por el Prestador en ejecución de este contrato será del Cliente, una vez que se encuentren pagados los honorarios correspondientes. El Prestador podrá conservar copias internas para efectos de respaldo y referencia profesional, siempre respetando la confidencialidad.\n\n";
+
+      text += (baseNextClause + 1) + ". TERMINACIÓN ANTICIPADA\n";
+      text += "Cualquiera de las Partes podrá poner término al presente contrato de manera anticipada, informando por escrito a la otra Parte con un preaviso razonable. En dicho caso, el Cliente deberá pagar al Prestador los servicios efectivamente prestados hasta la fecha de término.\n\n";
+
+      text += (baseNextClause + 2) + ". LEY APLICABLE Y JURISDICCIÓN\n";
+      text += "El presente contrato se regirá e interpretará de acuerdo con las leyes del país acordado por las Partes. Para todos los efectos derivados de este contrato, las Partes fijan su domicilio en la ciudad indicada en el encabezado y se someten a la jurisdicción de sus tribunales ordinarios de justicia.\n\n";
+
+      text += "En constancia de lo anterior, las Partes firman el presente contrato en dos ejemplares de igual tenor y fecha.\n\n";
+      text += `__________________________\n${providerName || "[PRESTADOR]"}\n\n`;
+      text += `__________________________\n${clientName || "[CLIENTE]"}\n`;
+
+      return text;
+    }
+
+    function updatePreview() {
+      const values = {
+        providerName: document.getElementById("providerName").value.trim(),
+        clientName: document.getElementById("clientName").value.trim(),
+        cityCountry: document.getElementById("cityCountry").value.trim(),
+        startDate: document.getElementById("startDate").value,
+        amount: document.getElementById("amount").value.trim(),
+        serviceDescription: document.getElementById("serviceDescription").value.trim(),
+        duration: document.getElementById("duration").value.trim(),
+        includeConfidentiality: document.getElementById("includeConfidentiality").checked,
+        includeNonCompete: document.getElementById("includeNonCompete").checked
+      };
+
+      const preview = document.getElementById("preview");
+      const fullText = buildContractText(values);
+
+      preview.textContent = "";
+      const title = document.createElement("h2");
+      title.textContent = "CONTRATO DE PRESTACIÓN DE SERVICIOS";
+      preview.appendChild(title);
+
+      const body = document.createElement("div");
+      body.textContent = fullText.replace("CONTRATO DE PRESTACIÓN DE SERVICIOS\n\n", "");
+      preview.appendChild(body);
+    }
+
+    function downloadContract() {
+      const preview = document.getElementById("preview");
+      const text = preview.innerText;
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "contrato-prestacion-servicios-oraclaw.docx";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+    function resetForm() {
+      document.getElementById("contractForm").reset();
+      document.getElementById("includeConfidentiality").checked = true;
+      document.getElementById("includeNonCompete").checked = false;
+      updatePreview();
+    }
+
+    function handleLawyerForm(event) {
+      event.preventDefault();
+      alert("Solicitud enviada (demo). En producción, envía este formulario a tu email o backend.");
+      event.target.reset();
+    }
+
+    document.getElementById("updatePreviewBtn").addEventListener("click", updatePreview);
+    document.getElementById("downloadBtn").addEventListener("click", downloadContract);
+    document.getElementById("resetBtn").addEventListener("click", resetForm);
+    document.getElementById("contractForm").addEventListener("input", updatePreview);
+
+    updatePreview();
+  </script>
+</body>
+</html>
