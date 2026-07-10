@@ -697,6 +697,7 @@
       align-items: center;
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
 </head>
 <body>
   <div class="page">
@@ -1227,18 +1228,89 @@
       preview.appendChild(body);
     }
 
-    function downloadContract() {
-      const preview = document.getElementById("preview");
-      const text = preview.innerText;
-      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    function getFormValues() {
+      return {
+        providerName: document.getElementById("providerName").value.trim(),
+        clientName: document.getElementById("clientName").value.trim(),
+        cityCountry: document.getElementById("cityCountry").value.trim(),
+        startDate: document.getElementById("startDate").value,
+        amount: document.getElementById("amount").value.trim(),
+        serviceDescription: document.getElementById("serviceDescription").value.trim(),
+        duration: document.getElementById("duration").value.trim(),
+        includeConfidentiality: document.getElementById("includeConfidentiality").checked,
+        includeNonCompete: document.getElementById("includeNonCompete").checked
+      };
+    }
+
+    function escapeXml(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&apos;");
+    }
+
+    // Convierte el texto del contrato en un word/document.xml válido (OOXML).
+    function buildDocumentXml(text) {
+      const lines = text.split("\n");
+      let body = "";
+      lines.forEach((line, i) => {
+        const content = escapeXml(line);
+        if (i === 0) {
+          // Título: centrado y en negrita
+          body += '<w:p><w:pPr><w:jc w:val="center"/><w:rPr><w:b/></w:rPr></w:pPr>' +
+                  '<w:r><w:rPr><w:b/></w:rPr><w:t xml:space="preserve">' + content + "</w:t></w:r></w:p>";
+        } else {
+          body += '<w:p><w:r><w:t xml:space="preserve">' + content + "</w:t></w:r></w:p>";
+        }
+      });
+      return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' +
+        "<w:body>" + body + "<w:sectPr/></w:body></w:document>";
+    }
+
+    function triggerDownload(blob, filename) {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "contrato-prestacion-servicios-oraclaw.docx";
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+    }
+
+    async function downloadContract() {
+      const text = buildContractText(getFormValues());
+      try {
+        if (typeof JSZip === "undefined") throw new Error("JSZip no está disponible");
+
+        const zip = new JSZip();
+        zip.file("[Content_Types].xml",
+          '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+          '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+          '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+          '<Default Extension="xml" ContentType="application/xml"/>' +
+          '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>' +
+          "</Types>");
+        zip.folder("_rels").file(".rels",
+          '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+          '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+          '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>' +
+          "</Relationships>");
+        zip.folder("word").file("document.xml", buildDocumentXml(text));
+
+        const blob = await zip.generateAsync({
+          type: "blob",
+          mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        });
+        triggerDownload(blob, "contrato-prestacion-servicios-oraclaw.docx");
+      } catch (e) {
+        // Fallback honesto: si algo falla, descarga como texto plano .txt
+        const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+        triggerDownload(blob, "contrato-prestacion-servicios-oraclaw.txt");
+      }
     }
 
     function resetForm() {
